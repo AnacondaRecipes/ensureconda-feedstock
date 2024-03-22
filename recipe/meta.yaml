@@ -27,8 +27,8 @@ requirements:
     - appdirs
     - click >=5.1
     - filelock
-    - requests >=2
     - packaging
+    - requests >=2
 
 test:
   imports:
