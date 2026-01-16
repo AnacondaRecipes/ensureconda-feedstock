@@ -39,6 +39,7 @@ test:
   commands:
     - pip check
     - ensureconda --help
+    # No pytest since unit tests are based on docker
 
 about:
   home: https://github.com/conda-incubator/ensureconda
