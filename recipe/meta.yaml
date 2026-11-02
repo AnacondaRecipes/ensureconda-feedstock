@@ -31,10 +31,10 @@ requirements:
     - python
     - appdirs
     - click >=5.1
-    - conda-package-streaming
     - filelock
     - packaging
     - requests >=2
+    - conda-package-streaming
 
 test:
   source_files:
