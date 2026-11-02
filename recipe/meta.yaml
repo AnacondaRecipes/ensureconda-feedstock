@@ -1,13 +1,18 @@
 {% set name = "ensureconda" %}
-{% set version = "1.6.0" %}
+{% set version = "1.7.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 52b3279cd48002cd0ed5f42a00dd1e4a9086a99d1fa68375e8920fde95f77738
+  # Upstream excludes the test suite from the sdist, so the GitHub release
+  # tarball is fetched as a second source to run the unit tests.
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 03cf27ffc3c976f4770263ce4fd2740d32de636da30252195b0a8cd9b7e26558
+  - url: https://github.com/conda-incubator/ensureconda/archive/v{{ version }}.tar.gz
+    sha256: e621a96d6d3dd36d86ef1d5159b777e2c2b18e2c67fbf4aefbd8cc57921ccc32
+    folder: gh_src
 
 build:
   number: 0
@@ -32,18 +37,24 @@ requirements:
     - conda-package-streaming
 
 test:
+  source_files:
+    - gh_src/test/test_api.py
+    - gh_src/test/test_installer.py
   imports:
     - ensureconda
   requires:
     - pip
+    - pytest
   commands:
     - pip check
     - ensureconda --help
-    # No pytest since unit tests are based on docker
+    # The remaining upstream tests (test_python_library.py, test_go_binaries.py)
+    # are not run: they require a Docker daemon / a Go toolchain and network access.
+    - pytest -vv gh_src/test/test_api.py gh_src/test/test_installer.py
 
 about:
   home: https://github.com/conda-incubator/ensureconda
-  summary: Install and run applications packaged with conda in isolated environments
+  summary: Lightweight bootstrapper for a conda executable
   license: MIT
   license_family: MIT
   license_file: LICENSE-MIT
